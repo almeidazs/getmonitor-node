@@ -12,7 +12,6 @@ describe('createURL', () => {
 				status: 'resolved',
 				includeHidden: false,
 				ignoreMe: undefined,
-				ignoreMeToo: null,
 			},
 			'https://api.getmonitor.io',
 		);
@@ -28,7 +27,7 @@ describe('GetMonitor', () => {
 		const client = new GetMonitor('secret_test');
 
 		expect(client.rest.headers.Authorization).toBe('Bearer secret_test');
-		expect(client.statusPages).toBeDefined();
+		expect(client.pages).toBeDefined();
 		expect(client.organizations.subscriptions).toBeDefined();
 	});
 });

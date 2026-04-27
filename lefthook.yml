@@ -1,0 +1,42 @@
+pre-commit:
+  parallel: false
+  commands:
+    biome:
+      run: |
+        FILES=$(git diff --name-only --cached --diff-filter=ACMR)
+
+        if [ -z "$FILES" ]; then
+          exit 0
+        fi
+
+        FORMATTABLE_FILES=$(echo "$FILES" | grep -E '\.(ts|js|json)$' || true)
+
+        if [ -n "$FORMATTABLE_FILES" ]; then
+          echo "$FORMATTABLE_FILES" | xargs bunx biome check --write
+        fi
+
+        git add $FILES
+        
+pre-push:
+  parallel: true
+  commands:
+    check:
+      run: bun run biome:check
+    typecheck:
+      run: |
+        OUTPUT=$(bun run typecheck 2>&1)
+        STATUS=$?
+
+        if [ $STATUS -ne 0 ]; then
+          echo "$OUTPUT"
+          exit $STATUS
+        fi
+
+        if [ -z "$OUTPUT" ]; then
+          echo "Typecheck passed with no output."
+          exit 0
+        fi
+
+        echo "$OUTPUT"
+    test:
+      run: bun test
